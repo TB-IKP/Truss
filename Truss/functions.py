@@ -69,7 +69,7 @@ def nonlinear(self,x):
 	node_disloc 	= x[-self.par['n_dl']:].reshape(self.par['n_fn'],self.par['dim'],self.par['n_lc'])
 
 	#stiffnes matrix
-	stiff_mat 	= stiffness_matrix(self,in_bar_diam=bar_diam)
+	stiff_mat 	= stiffness_matrix(self,x)
 
 	#nonlinear constraints
 	out_c  		= np.zeros((self.par['n_fn']*self.par['dim'],self.par['n_lc']))

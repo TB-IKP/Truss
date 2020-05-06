@@ -9,6 +9,7 @@ import numpy.ma as ma
 #---------------------------------------------------------------------------------------#
 
 def potential_bars(self):
+	'''Determination of all potential for the given nodes.'''
 
 	out_bars = []
 
@@ -76,6 +77,7 @@ def potential_bars(self):
 #---------------------------------------------------------------------------------------#
 
 def bar_lengths(self):
+	'''Determination of the bar lengths for the given ground structure.'''
 
 	out_bar_lengths = np.array([euclidean(self.nodes[bar[1]],self.nodes[bar[0]]) for bar in self.bars])
 
@@ -86,6 +88,8 @@ def bar_lengths(self):
 #---------------------------------------------------------------------------------------#
 
 def bar_angles(self):
+	'''Determination of the bar angles for the given ground structure
+	with repect to the displacement coordinate system.'''
 
 	out_bar_angles = np.zeros((len(self.nodes),self.par['dim'],len(self.bars)))
 
@@ -103,13 +107,23 @@ def bar_angles(self):
 #		Stiffness matrix
 #---------------------------------------------------------------------------------------#
 
-def stiffness_matrix(self,in_bar_diam):
+def stiffness_matrix(self,x):
+	'''Determination of the stiffness matrix K(x).
 
-	out_stiff_mat = np.zeros((self.par['n_fn']*self.par['dim'],
+	Parameters:
+	-----------
+	x: array
+		Bar diameters and nodal displacements as obtained from solve() method.
+	'''
+
+	#x = [bar_diam,node_disloc]
+	bar_diam 	= x[0:self.par['n_b']]
+
+	out_stiff_mat 	= np.zeros((self.par['n_fn']*self.par['dim'],
 				self.par['n_fn']*self.par['dim']))
 
 	for num_bar in range(self.par['n_b']):
-		out_stiff_mat += in_bar_diam[num_bar]*self.par['E']/self.bar_lengths[num_bar] * \
+		out_stiff_mat += bar_diam[num_bar]*self.par['E']/self.bar_lengths[num_bar] * \
 			self.bar_angles[self.free_nodes,:,num_bar].reshape(self.par['n_fn']*self.par['dim'],1) * \
 			self.bar_angles[self.free_nodes,:,num_bar].reshape(1,self.par['n_fn']*self.par['dim'])
 
@@ -120,6 +134,13 @@ def stiffness_matrix(self,in_bar_diam):
 #---------------------------------------------------------------------------------------#
 
 def stress(self,x):
+	'''Determine stress on the individual bars.
+
+	Parameters:
+	-----------
+	x: array
+		Bar diameters and nodal displacements as obtained from solve() method.
+	'''
 
 	#x = [bar_diam,node_disloc]
 	bar_diam 	= x[0:self.par['n_b']]
